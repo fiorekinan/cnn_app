@@ -17,7 +17,18 @@ class CategoryChip extends StatelessWidget {
         selected: isSelected,
         onSelected: (_) => onTap(),
         backgroundColor: Colors.grey[100],
-        selectedColor: AppColors.primary,
+        selectedColor: AppColors.primary.withValues(alpha: 0.2), //pengganti withOpacity
+        checkmarkColor: AppColors.primary,
+        labelStyle: TextStyle(
+          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: isSelected ? AppColors.primary : Colors.transparent
+          )
+        ),
       ),
       );
   }
