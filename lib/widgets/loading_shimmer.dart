@@ -10,31 +10,31 @@ class LoadingShimmer extends StatefulWidget {
 
 class _LoadingShimmerState extends State<LoadingShimmer> 
     with SingleTickerProviderStateMixin {
-      late AnimationController _animationController; //ini untuk menginisialisasi sebuah variable, diaksesnya nanti 
+      late AnimationController _animationController;
       late Animation<double> _animation;
 
-      @override
-      void initState() {
-        super.initState();
-        _animationController = AnimationController(
-          duration: Duration(milliseconds: 1500),
-          vsync: this,
-        )..repeat();
+    @override
+    void initState() {
+      super.initState();
+      _animationController = AnimationController(
+        duration: Duration(milliseconds: 1500),
+        vsync: this, 
+      )..repeat();
 
-        _animation = Tween<double>(
-          begin: -1.0,
-          end: 2.0
-        ).animate(CurvedAnimation(
-          parent:_animationController, 
-          curve: Curves.easeInOut
-          ));
-      }
+      _animation = Tween<double>(
+        begin: -1.0,
+        end: 2.0
+      ).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut
+      ));
+    }
 
-      @override
-      void dispose() {
-        _animationController.dispose();
-        super.dispose();
-      }
+    @override
+    void dispose() {
+      _animationController.dispose();
+      super.dispose();
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +46,37 @@ class _LoadingShimmerState extends State<LoadingShimmer>
           margin: EdgeInsets.only(bottom: 16),
           elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(12),
+            borderRadius: BorderRadius.circular(12)
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //untuk image shimmer
+              // image shimmer
               AnimatedBuilder(
-                animation: _animation, 
-              builder: (context, child) {
-                return Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        AppColors.divider,
-                        AppColors.divider.withValues(alpha: 0.5),
-                        AppColors.divider
-                      ],
-                      stops: [
-                        0.0,
-                        0.5,
-                        1.0
-                      ],
-                      transform: GradientRotation(_animation.value * 3.14159)
-                    )
-                  ),
-                );
-              }
+                animation: _animation,
+                builder: (context, child) {
+                  return Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          AppColors.divider,
+                          AppColors.divider.withValues(alpha: 0.5),
+                          AppColors.divider
+                        ],
+                        stops: [
+                          0.0,
+                          0.5,
+                          1.0
+                        ],
+                        transform: GradientRotation(_animation.value * 3.14159)
+                      )
+                    ),
+                  );
+                },
               ),
 
               Padding(
@@ -84,7 +84,7 @@ class _LoadingShimmerState extends State<LoadingShimmer>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //source shimmer
+                    // source shimmer
                     AnimatedBuilder(
                       animation: _animation,
                       builder: (context, child) {
@@ -97,66 +97,66 @@ class _LoadingShimmerState extends State<LoadingShimmer>
                           ),
                         );
                       },
-                      ),
-                      SizedBox(height: 12),
+                    ),
+                    SizedBox(height: 12),
 
-                      //title shimmer
-                      AnimatedBuilder(
-                        animation: _animation, 
-                        builder: (context, child) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 16,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: AppColors.divider
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Container(
-                                  height: 16,
-                                  width: MediaQuery.of(context).size.width * 0.7,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: AppColors.divider
-                                  ),
-                                )
-                              ],
-                            );
-                        }
-                      ),
-                      SizedBox(height: 12),
-                      //description shimmer
-                      AnimatedBuilder(
-                        animation: _animation, 
-                        builder: (context, child) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 14,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(7),
-                                  color: AppColors.divider
-                                ),
+                    // title shimmer
+                    AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 16,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.divider
                               ),
-                              SizedBox(height: 6),
-                              Container(
-                                height: 14,
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(7),
-                                  color: AppColors.divider
-                                ),
-                              )
-                            ],
-                          );
-                        }
-                      )
+                            ),
+                            SizedBox(height: 8),
+                            Container(
+                              height: 16,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.divider
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 12),
+                    // description shimmer
+                    AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 14,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
+                                color: AppColors.divider
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Container(
+                              height: 14,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
+                                color: AppColors.divider
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    )
                   ],
                 ),
               )

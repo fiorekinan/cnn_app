@@ -17,7 +17,7 @@ class CategoryChip extends StatelessWidget {
         selected: isSelected,
         onSelected: (_) => onTap(),
         backgroundColor: Colors.grey[100],
-        selectedColor: AppColors.primary.withValues(alpha: 0.2), //pengganti withOpacity
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         checkmarkColor: AppColors.primary,
         labelStyle: TextStyle(
           color: isSelected ? AppColors.primary : AppColors.textSecondary,
@@ -30,6 +30,6 @@ class CategoryChip extends StatelessWidget {
           )
         ),
       ),
-      );
+    );
   }
 }
