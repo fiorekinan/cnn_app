@@ -1,4 +1,5 @@
 import 'package:cnn_app/bindings/app_bindings.dart';
+import 'package:cnn_app/controllers/news_controller.dart';
 import 'package:cnn_app/routes/app_pages.dart';
 import 'package:cnn_app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 void main() async {
+  Get.put(NewsController());
   WidgetsFlutterBinding.ensureInitialized();
 
   // load environtment variables first before running the app

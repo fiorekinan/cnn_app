@@ -67,42 +67,12 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       width: 120,
                       height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.newspaper,
-                        size: 60,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Text(
-                      'News App',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Stay Updated with Latest News',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withValues( alpha: 0.8),
+                      child: Image.asset(
+                         'assets/images/CNN_International_logo.png',
+                         height: 80,
                       ),
                     ),
                     SizedBox(height: 50),

@@ -10,31 +10,31 @@ class LoadingShimmer extends StatefulWidget {
 
 class _LoadingShimmerState extends State<LoadingShimmer> 
     with SingleTickerProviderStateMixin {
-      late AnimationController _animationController;
-      late Animation<double> _animation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
-    @override
-    void initState() {
-      super.initState();
-      _animationController = AnimationController(
-        duration: Duration(milliseconds: 1500),
-        vsync: this, 
-      )..repeat();
+  @override 
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
 
-      _animation = Tween<double>(
-        begin: -1.0,
-        end: 2.0
-      ).animate(CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut
-      ));
-    }
+    _animation = Tween<double>(
+      begin: -1.0,
+      end: 2.0
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut
+    ));
+  }
 
-    @override
-    void dispose() {
-      _animationController.dispose();
-      super.dispose();
-    }
+  @override 
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,6 @@ class _LoadingShimmerState extends State<LoadingShimmer>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // image shimmer
               AnimatedBuilder(
                 animation: _animation,
                 builder: (context, child) {

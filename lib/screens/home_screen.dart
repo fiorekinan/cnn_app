@@ -1,115 +1,186 @@
-// A brand new for make a screen using get state management
 import 'package:cnn_app/controllers/news_controller.dart';
 import 'package:cnn_app/routes/app_pages.dart';
 import 'package:cnn_app/utils/app_colors.dart';
-import 'package:cnn_app/widgets/category_chip.dart';
-import 'package:cnn_app/widgets/loading_shimmer.dart';
-import 'package:cnn_app/widgets/news_card.dart';
+import 'package:cnn_app/widgets/bottom_nav_bar.dart';
+import 'package:cnn_app/widgets/loading_splendid.dart';
+import 'package:cnn_app/widgets/news_snippet.dart';
+import 'package:cnn_app/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends GetView<NewsController> {
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final controller = Get.find<NewsController>();
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchTopHeadlines();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Get.offAllNamed(Routes.HOME);
+    } else if (index == 1) {
+      Get.offAllNamed(Routes.NEWS_SECTION);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('News App'),
-        centerTitle: true,
+        toolbarHeight: 80,
+        title: Image.asset(
+          'assets/images/CNN_International_logo.png',
+          height: 60,
+        ),
+        centerTitle: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () => _showSearchDialog(context),
-          )
+            icon: const Icon(Icons.search),
+            onPressed: () => Get.toNamed(Routes.SEARCH),
+          ),
         ],
       ),
-      body: Column(
-        children: [
-          // categories
-          Container(
-            height: 60,
-            color: Colors.white,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: controller.categories.length,
-              itemBuilder: (context, index) {
-                final category = controller.categories[index];
-                // obx -> observe getx
-                return Obx(() => CategoryChip(
-                  // ?? itu buat ngeset default value
-                  label: category.capitalize ?? category,
-                  isSelected: controller.selectedCategory == category,
-                  onTap: () => controller.selectCategory(category),
-                ));
-              },
+      body: Obx(() {
+        if (controller.isLoading) return const LoadingSplendid();
+        if (!controller.isLoading && controller.articles.isEmpty) {
+          return controller.error.isNotEmpty
+              ? _buildErrorWidget()
+              : _buildEmptyWidget();
+        }
+
+        final articles = controller.articles;
+
+        return RefreshIndicator(
+          onRefresh: controller.refreshNews,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Welcome Back",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Text(
+                    "BREAKING NEWS",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 380,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: articles.length < 5 ? articles.length : 5,
+                      separatorBuilder: (_, __) => const SizedBox(width: 16),
+                      itemBuilder: (context, index) {
+                        final article = articles[index];
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: NewsSnippet(
+                            article: article,
+                            onTap: () => Get.toNamed(
+                              Routes.NEWS_DETAIL,
+                              arguments: article,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Top Headlines",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Icon(Icons.arrow_right, size: 32),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: articles.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 16),
+                      itemBuilder: (context, index) {
+                        final article = articles[index];
+                        return StoryCard(
+                          article: article,
+                          onTap: () => Get.toNamed(
+                            Routes.NEWS_DETAIL,
+                            arguments: article,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
-          // news list
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading) {
-                return LoadingShimmer();
-              }
-
-              if (controller.error.isNotEmpty) {
-                return _buildErrorWidget();
-              }
-
-              if (controller.articles.isEmpty) {
-                return _buildEmptyWidget();
-              }
-
-              return RefreshIndicator(
-                onRefresh: controller.refreshNews,
-                child: ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount: controller.articles.length,
-                  itemBuilder: (context, index) {
-                    final article = controller.articles[index];
-                    return NewsCard(
-                      article: article,
-                      onTap: () => Get.toNamed(
-                        Routes.NEWS_DETAIL,
-                        // arguments berfungsi untuk bernavigasi ke halaman lain dengan membawa berita
-                        arguments: article
-                      ),
-                    );
-                  },
-                ),
-              );
-            }),
-          )
-        ],
+        );
+      }),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
 
   Widget _buildEmptyWidget() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.newspaper,
-            size: 64,
-            color: AppColors.textHint,
-          ),
+          Icon(Icons.newspaper, size: 64, color: Colors.grey),
           SizedBox(height: 16),
           Text(
             'No news available',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary
+              color: Colors.black,
             ),
           ),
           SizedBox(height: 8),
-          Text(
-            'Please try again later',
-            style: TextStyle(
-              color: AppColors.textSecondary
-            ),
-          )
+          Text('Please try again later', style: TextStyle(color: Colors.grey)),
         ],
       ),
     );
@@ -120,75 +191,32 @@ class HomeScreen extends GetView<NewsController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.error_outline,
             size: 64,
-            color: AppColors.error,
+            color: AppColors.textSecondary,
           ),
-          SizedBox(height: 16),
-          Text(
+          const SizedBox(height: 16),
+          const Text(
             'Something went wrong',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary
+              color: Colors.black,
             ),
           ),
-          SizedBox(height: 8),
-          Text(
+          const Text(
             'Please check your internet connection',
-             style: TextStyle(
-              color: AppColors.textSecondary
-             ),
+            style: TextStyle(color: AppColors.textSecondary),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 16),
           ElevatedButton(
             onPressed: controller.refreshNews,
-            child: Text('Retry'),
-          )
+            style: ElevatedButton.styleFrom(minimumSize: const Size(150, 40)),
+            child: const Text('Retry', style: TextStyle(fontSize: 16)),
+          ),
         ],
       ),
-    );
-  }
-
-
-
-  void _showSearchDialog(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Search News'),
-        content: TextField(
-          controller: searchController,
-          decoration: InputDecoration(
-            hintText: 'Please type a news..',
-            border: OutlineInputBorder()
-          ),
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              controller.searchNews(value);
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (searchController.text.isNotEmpty) {
-                controller.searchNews(searchController.text);
-                Navigator.of(context).pop();
-              }
-            },
-            child: Text('Search'),
-          )
-        ],
-      )
     );
   }
 }

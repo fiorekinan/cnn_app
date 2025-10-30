@@ -12,6 +12,8 @@ class NewsController extends GetxController {
   final _isLoading = false.obs;
   // ini untuk menampilkan data berita yang sudah berhasil didapat.
   final _articles = <NewsArticles>[].obs;
+  // untuk hasil pencarian agar tidak campur dengan data utama
+  final _searchResults = <NewsArticles>[].obs;
   //untuk handel kategori atau yg muncul di screen 
   final _selectedCategory = 'general'.obs;
   // kalo ada kesalahan pesan error akan disimpan disiini
@@ -22,13 +24,14 @@ class NewsController extends GetxController {
 
   bool get isLoading => _isLoading.value;
   List<NewsArticles> get articles => _articles;
+  List<NewsArticles> get searchResults => _searchResults; // hasil pencarian
   String get selectedCategory => _selectedCategory.value;
   String get error => _error.value;
   List<String> get categories => Constants.categories;
 
   //begitu app dibuka app langsung menampilkan berita pertama dari endpoint top-headlines
   //TODO: Fetching data dari endpoint top=headlines
-  Future<void> fetchTopHeadlines({String? category}) async {
+  Future<void> fetchTopHeadlines({String? category, bool showSnackbar = false}) async {
     //blok ini akan dijalan kan jika rest api berhasil berkomunikasi dgn server
     try {
       _isLoading.value = true;
@@ -38,30 +41,39 @@ class NewsController extends GetxController {
       );
       _articles.value = response.articles;
     } catch (e) {
-      _error.value = error.toString();
-      Get.snackbar(
-        'Error', 
-        'Failed to Load news: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
+      _error.value = e.toString();
+      if (showSnackbar) {
+        Get.snackbar(
+          'Error', 
+          'Failed to Load news: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
         );
-        // finally akan tetap di execute setelah salah satu dari blok try atau catch sudah berhasil mendapatkan hasil
+      }
+      // finally akan tetap di execute setelah salah satu dari blok try atau catch sudah berhasil mendapatkan hasil
     } finally {
       _isLoading.value = false;
     }
   }
 
-  Future<void> refreshNews() async {
-    await fetchTopHeadlines();
+  Future<void> refreshNews({bool showSnackbar = false}) async {
+    await fetchTopHeadlines(showSnackbar: showSnackbar);
   }
 
-  void selectCategory(String category) {
+  void selectCategory(String category, {bool showSnackbar = false}) {
     if (_selectedCategory.value != category) {
       _selectedCategory.value = category;
-      fetchTopHeadlines(category: category);
+      fetchTopHeadlines(category: category, showSnackbar: showSnackbar);
     }
   }
 
-  Future<void> searchNews(String query) async {
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTopHeadlines(); // default tanpa snackbar
+  }
+
+  // untuk fitur search
+  Future<void> searchNews(String query, {bool showSnackbar = false}) async {
     if (query.isEmpty) return;
 
     try {
@@ -69,17 +81,22 @@ class NewsController extends GetxController {
       _error.value = '';
 
       final response = await _newsServices.searchNews(query: query);
-      _articles.value = response.articles;
+      _searchResults.value = response.articles;
     } catch (e) {
       _error.value = e.toString();
-      Get.snackbar(
-        'Error',
-        'Failed to search news: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM
-      );
-    }
-    finally {
+      if (showSnackbar) {
+        Get.snackbar(
+          'Error',
+          'Failed to search news: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } finally {
       _isLoading.value = false;
     }
+  }
+
+  void clearSearchResults() {
+    _searchResults.clear();
   }
 }

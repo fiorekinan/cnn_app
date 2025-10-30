@@ -13,22 +13,25 @@ class NewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shadowColor: AppColors.cardShadow,
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 3,
+      shadowColor: Colors.black12,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12)
+        borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
-        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // image
+            // Image
             if (article.urlToImage != null)
               ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: CachedNetworkImage(
                   imageUrl: article.urlToImage!,
                   height: 200,
@@ -37,9 +40,7 @@ class NewsCard extends StatelessWidget {
                   placeholder: (context, url) => Container(
                     height: 200,
                     color: AppColors.divider,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
                   errorWidget: (context, url, error) => Container(
                     height: 200,
@@ -55,69 +56,86 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // source news and date
-                    Row(
-                      children: [
-                        if (article.source?.name != null) ...[
-                          Expanded(
-                            child: Text(
-                              article.source!.name!,
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            )
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Source news and date
+                  Row(
+                    children: [
+                      if (article.source?.name != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
-                          SizedBox(width: 8),
-                        ],
-                        // timestamp
-                        if (article.publishedAt != null)
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                article.source!.name!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.new_releases,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      const Spacer(),
+                      if (article.publishedAt != null)
                         Text(
                           timeago.format(DateTime.parse(article.publishedAt!)),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: 12
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
                           ),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    // title
-                    if (article.title != null)
+                        ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+                  if (article.title != null)
                     Text(
                       article.title!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
-                        height: 1.3
+                        height: 1.3,
                       ),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 8),
-                    // description
-                    if (article.description != null)
+                  const SizedBox(height: 8),
+                  if (article.description != null)
                     Text(
                       article.description!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
-                        height: 1.4
+                        height: 1.4,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                    )
-                  ],
-                ),
-              )
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

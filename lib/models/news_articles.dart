@@ -7,18 +7,27 @@ class NewsArticles {
   final String? content;
   final Source? source;
 
-  NewsArticles({required this.title, required this.description, required this.url, required this.urlToImage, required this.publishedAt, required this.content, required this.source});
+  NewsArticles({
+    required this.title,
+    required this.description,
+    required this.url,
+    required this.urlToImage,
+    required this.publishedAt,
+    required this.content,
+    required this.source,
+  });
 
-  factory NewsArticles.fromJson(Map<String, dynamic> json){
+  factory NewsArticles.fromJson(Map<String, dynamic> json) {
     return NewsArticles(
-      title: json['title'], 
-      description: json['description'], 
-      url: json['url'], 
-      urlToImage: json['urlToImage'], 
-      publishedAt: json['publishedAt'], 
-      content: json['content'], 
-      source: json['source'] != null ? Source.fromJson(json['source']) : null
-      );
+      title: json['title'],
+      description: json['description'],
+      url: json['url'],
+      urlToImage: json['urlToImage'],
+      publishedAt: json['publishedAt'],
+      content: json['content'],
+      source:
+          json['source'] != null ? Source.fromJson(json['source']) : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -32,6 +41,13 @@ class NewsArticles {
       'source': source?.toJson(),
     };
   }
+
+  // gabungan description + content biar teks lebih panjang
+  String get fullContent {
+    final desc = description ?? '';
+    final cont = content?.replaceAll(RegExp(r'\[\+\d+\schars\]'), '') ?? '';
+    return '$desc\n\n$cont';
+  }
 }
 
 class Source {
@@ -39,16 +55,15 @@ class Source {
   final String? name;
 
   Source({this.id, this.name});
-// untuk merapihkan format data yang didapatkan dr server yg awalnya bertipe data  .jason menjadi data yg dimengerti oleh bahasa pemrograman yg digunakan
+  // untuk merapihkan format data yang didapatkan dr server yg awalnya bertipe data  .jason menjadi data yg dimengerti oleh bahasa pemrograman yg digunakan
   factory Source.fromJson(Map<String, dynamic> json) {
     return Source(
       id: json['id'],
       name: json['name'],
     );
-
   }
   Map<String, dynamic> toJson() {
-    return{
+    return {
       'id': id,
       'name': name,
     };
